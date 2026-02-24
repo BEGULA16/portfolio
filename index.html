@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J.Doe | Portfolio</title>
+    
+    <!-- Fail-safe: This tells the CSS that JS is actually working -->
+    <script>document.documentElement.classList.add('js-enabled');</script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            cursor: auto;
+            overflow-x: hidden;
+        }
+
+        /* Hide cursor on desktop where custom cursor is active */
+        @media (min-width: 1024px) {
+            body { cursor: none; }
+            a, button { cursor: none !important; }
+        }
+
+        /* Custom Cursor styling */
+        #custom-cursor {
+            transition: width 0.2s, height 0.2s, background-color 0.2s, transform 0s;
+            will-change: transform;
+            pointer-events: none;
+            z-index: 100;
+            mix-blend-mode: difference;
+        }
+
+        /* Immersive Grid Background */
+        #immersive-bg {
+            background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='rgba(255,255,255,0.15)'/%3E%3C/svg%3E");
+            transition: opacity 0.7s ease-in-out;
+            opacity: 0; 
+        }
+
+        /* Fade-in animations (Only hidden initially IF JavaScript is allowed to run) */
+        .js-enabled .fade-in-el {
+            opacity: 0;
+            transform: translateY(3rem); 
+        }
+        
+        .fade-in-el {
+            transition-property: all;
+            transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+            transition-duration: 1000ms;
+        }
+        
+        .fade-in-el.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Selection styling */
+        ::selection {
+            background-color: #ffffff;
+            color: #000000;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased relative">
+
+    <!-- Custom Cursor -->
+    <div id="custom-cursor" class="hidden lg:block fixed top-0 left-0 -ml-3 -mt-3 rounded-full border border-white w-6 h-6 bg-white"></div>
+
+    <!-- Immersive Background -->
+    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden hidden lg:block">
+        <div id="immersive-bg" class="absolute inset-0"></div>
+    </div>
+
+    <!-- DESKTOP SIDEBAR -->
+    <aside class="hidden lg:flex fixed top-0 left-0 h-screen w-72 border-r border-neutral-900 bg-black/80 backdrop-blur-md z-40 flex-col justify-between p-12">
+        <div class="space-y-12">
+            <div class="font-bold text-2xl tracking-tighter uppercase">
+                J.Doe<span class="text-neutral-500">®</span>
+            </div>
+
+            <nav class="space-y-6" id="desktop-nav">
+                <a href="#home" class="nav-link group flex items-center space-x-4 text-sm font-medium transition-all duration-300 text-white translate-x-2" data-target="home">
+                    <i data-lucide="home" class="w-[18px] h-[18px] opacity-100 transition-opacity nav-icon"></i>
+                    <span class="uppercase tracking-widest text-xs">Home</span>
+                </a>
+                <a href="#work" class="nav-link group flex items-center space-x-4 text-sm font-medium transition-all duration-300 text-neutral-500 hover:text-white hover:translate-x-1" data-target="work">
+                    <i data-lucide="briefcase" class="w-[18px] h-[18px] opacity-50 group-hover:opacity-100 transition-opacity nav-icon"></i>
+                    <span class="uppercase tracking-widest text-xs">Work</span>
+                </a>
+                <a href="#about" class="nav-link group flex items-center space-x-4 text-sm font-medium transition-all duration-300 text-neutral-500 hover:text-white hover:translate-x-1" data-target="about">
+                    <i data-lucide="user" class="w-[18px] h-[18px] opacity-50 group-hover:opacity-100 transition-opacity nav-icon"></i>
+                    <span class="uppercase tracking-widest text-xs">About</span>
+                </a>
+                <a href="#contact" class="nav-link group flex items-center space-x-4 text-sm font-medium transition-all duration-300 text-neutral-500 hover:text-white hover:translate-x-1" data-target="contact">
+                    <i data-lucide="mail" class="w-[18px] h-[18px] opacity-50 group-hover:opacity-100 transition-opacity nav-icon"></i>
+                    <span class="uppercase tracking-widest text-xs">Contact</span>
+                </a>
+            </nav>
+        </div>
+
+        <div class="space-y-6">
+            <div class="flex space-x-4 text-neutral-500">
+                <a href="#" class="hover:text-white transition-colors"><i data-lucide="github" class="w-5 h-5"></i></a>
+                <a href="#" class="hover:text-white transition-colors"><i data-lucide="linkedin" class="w-5 h-5"></i></a>
+                <a href="#" class="hover:text-white transition-colors"><i data-lucide="twitter" class="w-5 h-5"></i></a>
+            </div>
+            <div class="text-[10px] text-neutral-700 font-mono uppercase tracking-widest flex items-center">
+                <span id="perf-dot" class="w-1.5 h-1.5 rounded-full mr-2 bg-neutral-600"></span>
+                <span id="perf-status">checking...</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MOBILE BOTTOM NAV (DOCK) -->
+    <nav class="lg:hidden fixed bottom-6 left-6 right-6 z-50">
+        <div class="bg-[#0a0a0a]/90 backdrop-blur-md border border-neutral-800 rounded-full flex justify-between items-center px-6 py-4 shadow-2xl" id="mobile-nav">
+            <a href="#home" class="nav-link relative flex flex-col items-center p-2 transition-colors text-white" data-target="home">
+                <i data-lucide="home" class="w-[22px] h-[22px] nav-icon" style="stroke-width: 2.5;"></i>
+                <span class="nav-indicator absolute -bottom-1 w-1 h-1 bg-white rounded-full"></span>
+            </a>
+            <a href="#work" class="nav-link relative flex flex-col items-center p-2 transition-colors text-neutral-500 hover:text-neutral-300" data-target="work">
+                <i data-lucide="briefcase" class="w-[22px] h-[22px] nav-icon" style="stroke-width: 2;"></i>
+                <span class="nav-indicator absolute -bottom-1 w-1 h-1 bg-white rounded-full hidden"></span>
+            </a>
+            <a href="#about" class="nav-link relative flex flex-col items-center p-2 transition-colors text-neutral-500 hover:text-neutral-300" data-target="about">
+                <i data-lucide="user" class="w-[22px] h-[22px] nav-icon" style="stroke-width: 2;"></i>
+                <span class="nav-indicator absolute -bottom-1 w-1 h-1 bg-white rounded-full hidden"></span>
+            </a>
+            <a href="#contact" class="nav-link relative flex flex-col items-center p-2 transition-colors text-neutral-500 hover:text-neutral-300" data-target="contact">
+                <i data-lucide="mail" class="w-[22px] h-[22px] nav-icon" style="stroke-width: 2;"></i>
+                <span class="nav-indicator absolute -bottom-1 w-1 h-1 bg-white rounded-full hidden"></span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="lg:ml-72 pb-32 lg:pb-0 relative z-10">
+        
+        <!-- SECTION: HOME -->
+        <section id="home" class="scroll-section min-h-screen flex flex-col justify-center px-6 sm:px-12 lg:px-24 py-20">
+            <div class="max-w-5xl">
+                <div class="fade-in-el" style="transition-delay: 100ms;">
+                    <p class="text-neutral-500 uppercase tracking-[0.3em] text-xs md:text-sm mb-6 font-semibold flex items-center">
+                        <span class="w-2 h-2 rounded-full bg-white mr-3 animate-pulse"></span>
+                        Available for freelance
+                    </p>
+                </div>
+                <div class="fade-in-el" style="transition-delay: 200ms;">
+                    <h1 class="text-5xl md:text-7xl lg:text-8xl font-medium tracking-tighter leading-[1.1] mb-8">
+                        Crafting digital <br class="hidden md:block"/>
+                        experiences with <br class="hidden md:block"/>
+                        <span class="text-neutral-500 italic">precision.</span>
+                    </h1>
+                </div>
+                <div class="fade-in-el" style="transition-delay: 300ms;">
+                    <p class="text-neutral-400 text-lg md:text-xl lg:text-2xl max-w-3xl font-light leading-relaxed mb-12">
+                        I'm a software engineer and designer specializing in building minimal, high-performance applications with a relentless focus on the user interface.
+                    </p>
+                </div>
+                <div class="fade-in-el" style="transition-delay: 400ms;">
+                    <a href="#work" class="inline-flex items-center space-x-3 bg-white text-black px-8 py-4 rounded-full font-medium hover:bg-neutral-200 transition-colors group">
+                        <span>View My Work</span>
+                        <i data-lucide="arrow-right" class="w-[18px] h-[18px] group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: WORK -->
+        <section id="work" class="scroll-section min-h-screen px-6 sm:px-12 lg:px-24 py-24 bg-[#050505]/50 border-y border-neutral-900/50 backdrop-blur-sm">
+            <div class="max-w-6xl">
+                <div class="fade-in-el">
+                    <h2 class="text-3xl md:text-4xl lg:text-5xl font-medium tracking-tighter mb-12 md:mb-16">Selected Works</h2>
+                </div>
+
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 md:gap-12">
+                    
+                    <!-- Project 1 -->
+                    <div class="fade-in-el" style="transition-delay: 0ms;">
+                        <a href="#" class="group block relative h-full">
+                            <div class="relative z-10 p-6 md:p-8 border border-neutral-800 bg-[#0a0a0a] rounded-3xl transition-all duration-500 group-hover:border-neutral-500 xl:group-hover:-translate-y-2 h-full flex flex-col justify-between overflow-hidden">
+                                <div>
+                                    <div class="flex justify-between items-start mb-6">
+                                        <h3 class="text-xl md:text-2xl font-medium tracking-tight group-hover:text-white transition-colors pr-4">Onyx FinTech Dashboard</h3>
+                                        <i data-lucide="external-link" class="w-5 h-5 text-neutral-600 group-hover:text-white transition-colors flex-shrink-0"></i>
+                                    </div>
+                                    <p class="text-neutral-400 mb-8 leading-relaxed font-light text-sm md:text-base">
+                                        A high-performance financial dashboard built with React and WebGL, rendering real-time market data with zero lag.
+                                    </p>
+                                </div>
+                                <div class="flex flex-wrap gap-2 mt-auto">
+                                    <span class="text-[10px] md:text-xs px-3 py-1.5 bg-neutral-900 border border-neutral-800 rounded-full text-neutral-300 tracking-wider uppercase">React</span>
+                                    <span class="text-[10px] md:text-xs px-3 py-1.5 bg-neutral-900 border border-neutral-800 rounded-full text-neutral-300 tracking-wider uppercase">WebGL</span>
+                                    <span class="text-[10px] md:text-xs px-3 py-1.5 bg-neutral-900 border border-neutral-800 rounded-full text-neutral-300 tracking-wider uppercase">TypeScript</span>
+                                </div>
+                            </div>
+                            <div class="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 blur-2xl transition-opacity duration-500 rounded-3xl -z-10 hidden lg:block"></div>
+                        </a>
+                    </div>
+
+                    <!-- Project 2 -->
+                    <div class="fade-in-el" style="transition-delay: 100ms;">
+                        <a href="#" class="group block relative h-full">
+                            <div class="relative z-10 p-6 md:p-8 border border-neutral-800 bg-[#0a0a0a] rounded-3xl transition-all duration-500 group-hover:border-neutral-500 xl:group-hover:-translate-y-2 h-full flex flex-col justify-between overflow-hidden">
+                                <div>
+                                    <div class="flex justify-between items-start mb-6">
+                                        <h3 class="text-xl md:text-2xl font-medium tracking-tight group-hover:text-white transition-colors pr-4">Nebula OS Interface</h3>
+                                        <i data-lucide="external-link" class="w-5 h-5 text-neutral-600 group-hover:text-white transition-colors flex-shrink-0"></i>
+                                    </div>
+                                    <p class="text-neutral-400 mb-8 leading-relaxed font-light text-sm md:text-base">
+                                        Concept operating system interface accessible via browser. Focuses on spatial design and micro-interactions.
+                                    </p>
+                                </div>
+                                <div class="flex flex-wrap gap-2 mt-auto">
+                                    <span class="text-[10px] md:text-xs px-3 py-1.5 bg-neutral-900 border border-neutral-800 rounded-full text-neutral-300 tracking-wider uppercase">Vue</span>
+                                    <span class="text-[10px] md:text-xs px-3 py-1.5 bg-neutral-900 border border-neutral-800 rounded-full text-neutral-300 tracking-wider uppercase">Framer Motion</span>
+                                </div>
+                            </div>
+                            <div class="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 blur-2xl transition-opacity duration-500 rounded-3xl -z-10 hidden lg:block"></div>
+                        </a>
+                    </div>
+
+                    <!-- Project 3 -->
+                    <div class="fade-in-el" style="transition-delay: 200ms;">
+                        <a href="#" class="group block relative h-full">
+                            <div class="relative z-10 p-6 md:p-8 border border-neutral-800 bg-[#0a0a0a] rounded-3xl transition-all duration-500 group-hover:border-neutral-500 xl:group-hover:-translate-y-2 h-full flex flex-col justify-between overflow-hidden">
+                                <div>
+                                    <div class="flex justify-between items-start mb-6">
+                                        <h3 class="text-xl md:text-2xl font-medium tracking-tight group-hover:text-white transition-colors pr-4">Monolith Architecture</h3>
+                                        <i data-lucide="external-link" class="w-5 h-5 text-neutral-600 group-hover:text-white transition-colors flex-shrink-0"></i>
+                                    </div>
+                                    <p class="text-neutral-400 mb-8 leading-relaxed font-light text-sm md:text-base">
+                                        A minimalistic headless CMS architecture designed for hyper-fast static site generation and seamless content delivery.
+                                    </p>
+                                </div>
+                                <div class="flex flex-wrap gap-2 mt-auto">
+                                    <span class="text-[10px] md:text-xs px-3 py-1.5 bg-neutral-900 border border-neutral-800 rounded-full text-neutral-300 tracking-wider uppercase">Node.js</span>
+                                    <span class="text-[10px] md:text-xs px-3 py-1.5 bg-neutral-900 border border-neutral-800 rounded-full text-neutral-300 tracking-wider uppercase">GraphQL</span>
+                                </div>
+                            </div>
+                            <div class="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 blur-2xl transition-opacity duration-500 rounded-3xl -z-10 hidden lg:block"></div>
+                        </a>
+                    </div>
+
+                    <!-- Project 4 -->
+                    <div class="fade-in-el" style="transition-delay: 300ms;">
+                        <a href="#" class="group block relative h-full">
+                            <div class="relative z-10 p-6 md:p-8 border border-neutral-800 bg-[#0a0a0a] rounded-3xl transition-all duration-500 group-hover:border-neutral-500 xl:group-hover:-translate-y-2 h-full flex flex-col justify-between overflow-hidden">
+                                <div>
+                                    <div class="flex justify-between items-start mb-6">
+                                        <h3 class="text-xl md:text-2xl font-medium tracking-tight group-hover:text-white transition-colors pr-4">Aura Identity</h3>
+                                        <i data-lucide="external-link" class="w-5 h-5 text-neutral-600 group-hover:text-white transition-colors flex-shrink-0"></i>
+                                    </div>
+                                    <p class="text-neutral-400 mb-8 leading-relaxed font-light text-sm md:text-base">
+                                        Complete brand identity and web presence for an AI-driven cybersecurity startup.
+                                    </p>
+                                </div>
+                                <div class="flex flex-wrap gap-2 mt-auto">
+                                    <span class="text-[10px] md:text-xs px-3 py-1.5 bg-neutral-900 border border-neutral-800 rounded-full text-neutral-300 tracking-wider uppercase">UX/UI Design</span>
+                                    <span class="text-[10px] md:text-xs px-3 py-1.5 bg-neutral-900 border border-neutral-800 rounded-full text-neutral-300 tracking-wider uppercase">Next.js</span>
+                                </div>
+                            </div>
+                            <div class="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 blur-2xl transition-opacity duration-500 rounded-3xl -z-10 hidden lg:block"></div>
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: ABOUT -->
+        <section id="about" class="scroll-section min-h-screen px-6 sm:px-12 lg:px-24 py-24">
+            <div class="max-w-6xl">
+                <div class="fade-in-el">
+                    <h2 class="text-3xl md:text-4xl lg:text-5xl font-medium tracking-tighter mb-12 md:mb-16">Experience & Logic</h2>
+                </div>
+
+                <div class="grid grid-cols-1 xl:grid-cols-12 gap-16 xl:gap-24">
+                    <!-- Philosophy & Logic -->
+                    <div class="xl:col-span-5">
+                        <div class="fade-in-el" style="transition-delay: 100ms;">
+                            <h3 class="text-xl font-medium mb-6">Philosophy</h3>
+                            <p class="text-neutral-400 font-light leading-relaxed mb-6 text-sm md:text-base">
+                                I believe that the best interfaces are invisible. They don't scream for attention; instead, they elegantly facilitate the user's intent. 
+                            </p>
+                            <p class="text-neutral-400 font-light leading-relaxed mb-8 text-sm md:text-base">
+                                My approach marries brutalist minimalism with complex engineering. I strip away the superfluous until only the absolute essential remains, then I polish it until it shines.
+                            </p>
+                            
+                            <!-- Live Age Component -->
+                            <div class="mt-12 bg-[#050505] border border-neutral-900 rounded-3xl p-6 md:p-8 shadow-2xl">
+                                <h4 class="text-xs md:text-sm uppercase tracking-widest text-neutral-500 font-semibold mb-8 flex items-center">
+                                    <i data-lucide="activity" class="w-4 h-4 mr-3 text-white animate-pulse"></i> Live Uptime
+                                </h4>
+                                <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3 md:gap-4">
+                                    <div class="flex flex-col items-center justify-center bg-[#0a0a0a] border border-neutral-800 rounded-2xl py-6 px-2 transition-all hover:bg-[#111] hover:border-neutral-700">
+                                        <span id="uptime-years" class="text-3xl md:text-4xl lg:text-3xl xl:text-4xl font-light font-mono text-white tracking-tighter tabular-nums">00</span>
+                                        <span class="text-[10px] md:text-xs uppercase tracking-widest text-neutral-500 mt-2 font-medium">Years</span>
+                                    </div>
+                                    <div class="flex flex-col items-center justify-center bg-[#0a0a0a] border border-neutral-800 rounded-2xl py-6 px-2 transition-all hover:bg-[#111] hover:border-neutral-700">
+                                        <span id="uptime-months" class="text-3xl md:text-4xl lg:text-3xl xl:text-4xl font-light font-mono text-white tracking-tighter tabular-nums">00</span>
+                                        <span class="text-[10px] md:text-xs uppercase tracking-widest text-neutral-500 mt-2 font-medium">Months</span>
+                                    </div>
+                                    <div class="flex flex-col items-center justify-center bg-[#0a0a0a] border border-neutral-800 rounded-2xl py-6 px-2 transition-all hover:bg-[#111] hover:border-neutral-700">
+                                        <span id="uptime-days" class="text-3xl md:text-4xl lg:text-3xl xl:text-4xl font-light font-mono text-white tracking-tighter tabular-nums">00</span>
+                                        <span class="text-[10px] md:text-xs uppercase tracking-widest text-neutral-500 mt-2 font-medium">Days</span>
+                                    </div>
+                                    <div class="flex flex-col items-center justify-center bg-[#0a0a0a] border border-neutral-800 rounded-2xl py-6 px-2 transition-all hover:bg-[#111] hover:border-neutral-700">
+                                        <span id="uptime-hours" class="text-3xl md:text-4xl lg:text-3xl xl:text-4xl font-light font-mono text-white tracking-tighter tabular-nums">00</span>
+                                        <span class="text-[10px] md:text-xs uppercase tracking-widest text-neutral-500 mt-2 font-medium">Hours</span>
+                                    </div>
+                                    <div class="flex flex-col items-center justify-center bg-[#0a0a0a] border border-neutral-800 rounded-2xl py-6 px-2 transition-all hover:bg-[#111] hover:border-neutral-700">
+                                        <span id="uptime-mins" class="text-3xl md:text-4xl lg:text-3xl xl:text-4xl font-light font-mono text-white tracking-tighter tabular-nums">00</span>
+                                        <span class="text-[10px] md:text-xs uppercase tracking-widest text-neutral-500 mt-2 font-medium">Mins</span>
+                                    </div>
+                                    <div class="flex flex-col items-center justify-center bg-[#0a0a0a] border border-neutral-800 rounded-2xl py-6 px-2 transition-all hover:bg-[#111] hover:border-neutral-700">
+                                        <span id="uptime-secs" class="text-3xl md:text-4xl lg:text-3xl xl:text-4xl font-light font-mono text-white tracking-tighter tabular-nums">00</span>
+                                        <span class="text-[10px] md:text-xs uppercase tracking-widest text-neutral-500 mt-2 font-medium">Secs</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Timeline -->
+                    <div class="xl:col-span-7">
+                        <div class="space-y-12 md:space-y-16">
+                            
+                            <!-- Exp 1 -->
+                            <div class="fade-in-el" style="transition-delay: 200ms;">
+                                <div class="relative pl-6 md:pl-8 border-l border-neutral-800 xl:hover:pl-10 transition-all duration-300">
+                                    <div class="absolute left-[-5px] top-2 w-2.5 h-2.5 rounded-full bg-neutral-600 ring-4 ring-black"></div>
+                                    <div class="flex flex-col sm:flex-row sm:items-baseline mb-2 md:mb-3">
+                                        <h4 class="text-lg md:text-xl font-medium text-white sm:w-2/3">Senior Frontend Engineer</h4>
+                                        <div class="text-neutral-500 text-xs md:text-sm sm:w-1/3 sm:text-right mt-2 sm:mt-0 font-mono">2023 - Present</div>
+                                    </div>
+                                    <div class="text-neutral-300 font-medium mb-4 text-sm md:text-base">Stark Industries</div>
+                                    <p class="text-neutral-400 font-light text-sm md:text-base leading-relaxed">
+                                        Leading the core UI architecture team. Improved render performance by 40% across the flagship web application.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Exp 2 -->
+                            <div class="fade-in-el" style="transition-delay: 300ms;">
+                                <div class="relative pl-6 md:pl-8 border-l border-neutral-800 xl:hover:pl-10 transition-all duration-300">
+                                    <div class="absolute left-[-5px] top-2 w-2.5 h-2.5 rounded-full bg-neutral-600 ring-4 ring-black"></div>
+                                    <div class="flex flex-col sm:flex-row sm:items-baseline mb-2 md:mb-3">
+                                        <h4 class="text-lg md:text-xl font-medium text-white sm:w-2/3">UI/UX Designer & Developer</h4>
+                                        <div class="text-neutral-500 text-xs md:text-sm sm:w-1/3 sm:text-right mt-2 sm:mt-0 font-mono">2020 - 2023</div>
+                                    </div>
+                                    <div class="text-neutral-300 font-medium mb-4 text-sm md:text-base">Nexus Agency</div>
+                                    <p class="text-neutral-400 font-light text-sm md:text-base leading-relaxed">
+                                        Designed and developed award-winning marketing sites for Fortune 500 clients, focusing on immersive web experiences.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Exp 3 -->
+                            <div class="fade-in-el" style="transition-delay: 400ms;">
+                                <div class="relative pl-6 md:pl-8 border-l border-neutral-800 xl:hover:pl-10 transition-all duration-300">
+                                    <div class="absolute left-[-5px] top-2 w-2.5 h-2.5 rounded-full bg-neutral-600 ring-4 ring-black"></div>
+                                    <div class="flex flex-col sm:flex-row sm:items-baseline mb-2 md:mb-3">
+                                        <h4 class="text-lg md:text-xl font-medium text-white sm:w-2/3">Software Engineer</h4>
+                                        <div class="text-neutral-500 text-xs md:text-sm sm:w-1/3 sm:text-right mt-2 sm:mt-0 font-mono">2018 - 2020</div>
+                                    </div>
+                                    <div class="text-neutral-300 font-medium mb-4 text-sm md:text-base">Nova Startups</div>
+                                    <p class="text-neutral-400 font-light text-sm md:text-base leading-relaxed">
+                                        Built scalable RESTful APIs and responsive React frontends for early-stage tech products.
+                                    </p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: CONTACT -->
+        <section id="contact" class="scroll-section min-h-[80vh] flex flex-col justify-center px-6 sm:px-12 lg:px-24 py-24 bg-[#030303] relative border-t border-neutral-900">
+            <div class="max-w-5xl relative z-10">
+                <div class="fade-in-el">
+                    <h2 class="text-4xl md:text-6xl lg:text-7xl font-medium tracking-tighter mb-8 leading-[1.1]">Let's build something <br class="hidden md:block" /> extraordinary.</h2>
+                </div>
+                <div class="fade-in-el" style="transition-delay: 100ms;">
+                    <p class="text-neutral-400 text-lg md:text-xl font-light mb-12 md:mb-16 max-w-2xl leading-relaxed">
+                        Currently accepting new projects. Whether you have a specific idea in mind or just want to explore possibilities, my inbox is open.
+                    </p>
+                </div>
+                <div class="fade-in-el" style="transition-delay: 200ms;">
+                    <a href="mailto:hello@example.com" class="group inline-flex items-center space-x-4 md:space-x-6 text-xl md:text-3xl lg:text-4xl font-light border-b border-neutral-700 pb-4 hover:border-white transition-colors break-all">
+                        <span>hello@example.com</span>
+                        <i data-lucide="chevron-right" class="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 text-neutral-600 group-hover:text-white group-hover:translate-x-2 transition-all duration-300 flex-shrink-0"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="absolute bottom-6 md:bottom-8 left-6 sm:left-12 lg:left-24 right-6 sm:right-12 lg:right-24 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-[10px] md:text-xs font-mono text-neutral-600 uppercase tracking-widest">
+                <p>© <span id="current-year"></span> All Rights Reserved.</p>
+                <p>Engineered in Pure Code</p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Application Logic (Vanilla JS) -->
+    <script>
+        // 1. Initialize Icons
+        lucide.createIcons();
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+
+        // 2. Custom Cursor Logic
+        const cursor = document.getElementById('custom-cursor');
+        
+        document.addEventListener('mousemove', (e) => {
+            if (window.innerWidth >= 1024) {
+                cursor.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
+            }
+        });
+
+        document.addEventListener('mouseover', (e) => {
+            if (window.innerWidth < 1024) return;
+            const target = e.target;
+            if (target.tagName.toLowerCase() === 'a' || target.tagName.toLowerCase() === 'button' || target.closest('a') || target.closest('button')) {
+                cursor.classList.add('w-12', 'h-12', 'bg-white/20', 'scale-150');
+                cursor.classList.remove('w-6', 'h-6', 'bg-white', 'scale-100');
+            } else {
+                cursor.classList.add('w-6', 'h-6', 'bg-white', 'scale-100');
+                cursor.classList.remove('w-12', 'h-12', 'bg-white/20', 'scale-150');
+            }
+        });
+
+        // 3. Performance & Immersive Mode Logic
+        const bg = document.getElementById('immersive-bg');
+        const perfDot = document.getElementById('perf-dot');
+        const perfStatus = document.getElementById('perf-status');
+        
+        let frames = 0;
+        let startTime = performance.now();
+        let animationId;
+
+        const checkFPS = (time) => {
+            frames++;
+            if (time - startTime < 1000) {
+                animationId = requestAnimationFrame(checkFPS);
+            } else {
+                const fps = frames;
+                const loadTime = performance.now();
+                const isFastLoad = loadTime < 6000;
+
+                if (isFastLoad && fps >= 50) {
+                    // Activate Immersive Mode
+                    bg.style.opacity = '1';
+                    perfDot.classList.replace('bg-neutral-600', 'bg-white');
+                    perfStatus.textContent = `Immersive Mode Active (${fps}fps)`;
+                    
+                    // Track mouse for mask
+                    document.addEventListener('mousemove', (e) => {
+                        if (window.innerWidth >= 1024) {
+                            const mask = `radial-gradient(400px circle at ${e.clientX}px ${e.clientY}px, black 10%, transparent 100%)`;
+                            bg.style.webkitMaskImage = mask;
+                            bg.style.maskImage = mask;
+                        }
+                    });
+                } else {
+                    perfStatus.textContent = `Classic Mode Active`;
+                }
+            }
+        };
+        animationId = requestAnimationFrame(checkFPS);
+
+        // 4. Scroll Reveal Animations
+        const fadeElements = document.querySelectorAll('.fade-in-el');
+        const revealObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1, rootMargin: "50px" });
+        
+        fadeElements.forEach(el => revealObserver.observe(el));
+
+        // 5. Active Section Tracking (Navigation)
+        const sections = document.querySelectorAll('.scroll-section');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        const activeObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.id;
+                    
+                    navLinks.forEach(link => {
+                        const targetId = link.getAttribute('data-target');
+                        const isMobile = link.parentElement.id === 'mobile-nav';
+                        const icon = link.querySelector('.nav-icon');
+                        const indicator = link.querySelector('.nav-indicator');
+
+                        if (targetId === id) {
+                            if (isMobile) {
+                                link.classList.add('text-white');
+                                link.classList.remove('text-neutral-500');
+                                icon.style.strokeWidth = '2.5';
+                                if(indicator) indicator.classList.remove('hidden');
+                            } else {
+                                link.classList.add('text-white', 'translate-x-2');
+                                link.classList.remove('text-neutral-500');
+                                icon.classList.replace('opacity-50', 'opacity-100');
+                            }
+                        } else {
+                            if (isMobile) {
+                                link.classList.remove('text-white');
+                                link.classList.add('text-neutral-500');
+                                icon.style.strokeWidth = '2';
+                                if(indicator) indicator.classList.add('hidden');
+                            } else {
+                                link.classList.remove('text-white', 'translate-x-2');
+                                link.classList.add('text-neutral-500');
+                                icon.classList.replace('opacity-100', 'opacity-50');
+                            }
+                        }
+                    });
+                }
+            });
+        }, { rootMargin: '-40% 0px -40% 0px' });
+
+        sections.forEach(section => activeObserver.observe(section));
+
+        // 6. Live Uptime Calculator
+        const formatNumber = (num) => num.toString().padStart(2, '0');
+        
+        const calculateAge = () => {
+            const dateBirth = new Date(2010, 8, 16, 13, 23, 21); // Month is 0-indexed
+            const dateNow = new Date();
+
+            let years = dateNow.getFullYear() - dateBirth.getFullYear();
+            let months = dateNow.getMonth() - dateBirth.getMonth();
+            let days = dateNow.getDate() - dateBirth.getDate();
+            let hours = dateNow.getHours() - dateBirth.getHours();
+            let minutes = dateNow.getMinutes() - dateBirth.getMinutes();
+            let seconds = dateNow.getSeconds() - dateBirth.getSeconds();
+
+            if (seconds < 0) { seconds += 60; minutes--; }
+            if (minutes < 0) { minutes += 60; hours--; }
+            if (hours < 0) { hours += 24; days--; }
+            if (days < 0) {
+                const prevMonth = new Date(dateNow.getFullYear(), dateNow.getMonth(), 0);
+                days += prevMonth.getDate();
+                months--;
+            }
+            if (months < 0) { months += 12; years--; }
+
+            document.getElementById('uptime-years').textContent = formatNumber(years);
+            document.getElementById('uptime-months').textContent = formatNumber(months);
+            document.getElementById('uptime-days').textContent = formatNumber(days);
+            document.getElementById('uptime-hours').textContent = formatNumber(hours);
+            document.getElementById('uptime-mins').textContent = formatNumber(minutes);
+            document.getElementById('uptime-secs').textContent = formatNumber(seconds);
+        };
+
+        calculateAge(); // Initial call
+        setInterval(calculateAge, 1000); // Update every second
+
+    </script>
+</body>
+</html>
